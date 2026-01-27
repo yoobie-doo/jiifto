@@ -60,6 +60,7 @@ col1, col2 = st.columns(2)
 # ---------- Input Column ----------
 with col1:
     st.subheader("Input")
+    user_text = ""
     user_text = st.text_area(
         label="Enter your text",
         height=300,
