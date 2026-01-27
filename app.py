@@ -49,7 +49,7 @@ def parse_predict(lines):
     y_pred = prd.predict_syll(df)
 
     df['pred_meter'] = y_pred
-    df = df.drop(['word_start', 'word_end', 'syllables_w_SP'], axis=1)
+    df = df.drop(['word_start', 'word_end'], axis=1)
     return df
    
 
