@@ -1,0 +1,4 @@
+pandas
+sklearn_crfsuite
+itertools
+pickle
