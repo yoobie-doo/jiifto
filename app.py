@@ -48,13 +48,10 @@ def parse_predict(lines):
     # Pass the DataFrame to the prediction function
     y_pred = prd.predict_syll(df)
 
-    if y_pred:
-        df['pred_meter'] = y_pred
-        df = df.drop(['word_start', 'word_end', 'syllables_w_SP'], axis=1)
-        return df
-    else:
-        st.warning("nothing to output")
-        return
+    df['pred_meter'] = y_pred
+    df = df.drop(['word_start', 'word_end', 'syllables_w_SP'], axis=1)
+    return df
+   
 
 
 # ---------- Layout ----------
