@@ -48,10 +48,13 @@ def parse_predict(lines):
     # Pass the DataFrame to the prediction function
     y_pred = prd.predict_syll(df)
 
-    df['pred_meter'] = y_pred
-    df = df.drop(['word_start', 'word_end', 'syllables_w_SP'], axis=1)
-    
-    return df
+    if y_pred:
+        df['pred_meter'] = y_pred
+        df = df.drop(['word_start', 'word_end', 'syllables_w_SP'], axis=1)
+        return df
+    else:
+        st.warning("nothing to output")
+        return
 
 
 # ---------- Layout ----------
@@ -61,6 +64,8 @@ col1, col2 = st.columns(2)
 with col1:
     st.subheader("Input")
     user_text = ""
+    for punctuation in ',.!?;"-':
+        user_text = user_text.replace(punctuation, " ")
     user_text = st.text_area(
         label="Enter your text",
         height=300,
