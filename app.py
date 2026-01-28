@@ -28,35 +28,14 @@ def process_text(text: str) -> str:
     """
     
     return text.upper()  # example: convert to uppercase
-
-# def parse_predict(lines):
-#     def parse_single_line(ln: str) -> dict:
-#         syll_list = prs.parse_line(ln)
-#         spc_list = prs.insert_spaces(ln, syll_list)
-#         return {"syllables": syll_list, "syllables_w_SP": spc_list}
-
-#     # Check if input is a list or a single string
-#     if isinstance(lines, str):
-#         lines = [lines]  # Convert to list if it's a single string
-    
-#     # Parse all lines and collect results
-#     rows = [parse_single_line(ln) for ln in lines]
-    
-#     # Create DataFrame from the collected rows
-#     df = pd.DataFrame(rows)
-    
-#     # Pass the DataFrame to the prediction function
-#     y_pred = prd.predict_syll(df)
-
-#     if y_pred.ndim == 2 and y_pred.shape[0] == 1:
-#         y_pred = y_pred.flatten()  # now it's 1D
-
-#     if len(lines) == 1:
-#         y_pred = [', '.join(y_pred)]
-
-#     df['pred_meter'] = y_pred
-#     df = df.drop(['word_start', 'word_end', 'syllables_w_SP'], axis=1)
-#     return df
+def meter_sum(line):
+    msum = 0
+    for syl in line:
+        if syl == 'S':
+            msum += 1
+        elif syl == 'L':
+            msum += 2
+    return msum 
 
 def parse_predict(lines):
     def parse_single_line(ln: str) -> dict:
@@ -68,28 +47,41 @@ def parse_predict(lines):
     if isinstance(lines, str):
         lines = [lines]  # Convert to list if it's a single string
     
+    lines.append('\n')
     # Parse all lines and collect results
     rows = [parse_single_line(ln) for ln in lines]
     
     # Create DataFrame from the collected rows
     df = pd.DataFrame(rows)
-    # display(df)
     
     # Pass the DataFrame to the prediction function
     y_pred = prd.predict_syll(df)
-    if y_pred.ndim == 2 and y_pred.shape[0] == 1:
-        y_pred = y_pred.flatten()  # now it's 1D
+    print(y_pred)
+    print()
 
-    if len(lines) == 1:
-        y_pred = [', '.join(y_pred)]
- 
+    # if y_pred.ndim == 2 and y_pred.shape[0] == 1:
+    #     y_pred = y_pred[0]
+
+    # print(y_pred)
+    # print()
+
     df['pred_meter'] = y_pred
-    df = df.drop(['word_start', 'word_end', 'syllables_w_SP'], axis=1)
-    
+    df.drop(['word_start', 'word_end', 'syllables_w_SP'], axis=1, inplace=True)
+    df.drop(df.tail(1).index, inplace=True)
+
+    df['sum'] = df['pred_meter'].map(meter_sum)
     return df
    
 
-
+default_text = """Cirka sare u eegoo
+Xiddiggaha astaysoo
+Arag felegga meeroo
+Onkodkiyo hillaaciyo
+Ufadaa dhacaysiyo
+Uurada waraysoo
+Ololkeeda Gooraan
+Aammus oo dhegeysoo
+Shimbiraha la ooyoo"""
 # ---------- Layout ----------
 col1, col2 = st.columns(2)
 
@@ -102,17 +94,21 @@ with col1:
     user_text = st.text_area(
         label="Enter your text",
         height=300,
-        placeholder="Type something here..."
+        placeholder=default_text
     )
 
-    process_button = st.button("Process")
+    process_button = st.button("Process", type='primary')
 
 # ---------- Output Column ----------
 
 with col2:
     st.subheader("Output")
 
-    st.info("Processed text will appear here")
+    # st.info("Processed text will appear here")
+
+    if not user_text:
+        default_df = parse_predict(default_text.split('\n'))
+        st.dataframe(default_df)
 
     if process_button and user_text.strip():
         output_df = parse_predict(user_text.split('\n'))
@@ -121,10 +117,6 @@ with col2:
         else:
             st.warning("No results returned")
         # output_text = ""
-        
-    
-
-
     # st.text_area(
     #     label="Result",
     #     value=output_text,
