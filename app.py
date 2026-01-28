@@ -29,6 +29,35 @@ def process_text(text: str) -> str:
     
     return text.upper()  # example: convert to uppercase
 
+# def parse_predict(lines):
+#     def parse_single_line(ln: str) -> dict:
+#         syll_list = prs.parse_line(ln)
+#         spc_list = prs.insert_spaces(ln, syll_list)
+#         return {"syllables": syll_list, "syllables_w_SP": spc_list}
+
+#     # Check if input is a list or a single string
+#     if isinstance(lines, str):
+#         lines = [lines]  # Convert to list if it's a single string
+    
+#     # Parse all lines and collect results
+#     rows = [parse_single_line(ln) for ln in lines]
+    
+#     # Create DataFrame from the collected rows
+#     df = pd.DataFrame(rows)
+    
+#     # Pass the DataFrame to the prediction function
+#     y_pred = prd.predict_syll(df)
+
+#     if y_pred.ndim == 2 and y_pred.shape[0] == 1:
+#         y_pred = y_pred.flatten()  # now it's 1D
+
+#     if len(lines) == 1:
+#         y_pred = [', '.join(y_pred)]
+
+#     df['pred_meter'] = y_pred
+#     df = df.drop(['word_start', 'word_end', 'syllables_w_SP'], axis=1)
+#     return df
+
 def parse_predict(lines):
     def parse_single_line(ln: str) -> dict:
         syll_list = prs.parse_line(ln)
@@ -44,18 +73,19 @@ def parse_predict(lines):
     
     # Create DataFrame from the collected rows
     df = pd.DataFrame(rows)
+    # display(df)
     
     # Pass the DataFrame to the prediction function
     y_pred = prd.predict_syll(df)
-
     if y_pred.ndim == 2 and y_pred.shape[0] == 1:
         y_pred = y_pred.flatten()  # now it's 1D
 
     if len(lines) == 1:
         y_pred = [', '.join(y_pred)]
-
+ 
     df['pred_meter'] = y_pred
     df = df.drop(['word_start', 'word_end', 'syllables_w_SP'], axis=1)
+    
     return df
    
 
