@@ -47,6 +47,12 @@ def parse_predict(lines):
     
     # Pass the DataFrame to the prediction function
     y_pred = prd.predict_syll(df)
+    
+    if y_pred.ndim == 2 and y_pred.shape[0] == 1:
+        y_pred = y_pred.flatten()  # now it's 1D
+
+    if len(lines) == 1:
+        y_pred = [', '.join(y_pred)]
 
     df['pred_meter'] = y_pred
     df = df.drop(['word_start', 'word_end'], axis=1)
